@@ -9,7 +9,7 @@ from telegram.ext import (
 
 # ⚠️ Security note:
 # Public place එකකට token දාන්න එපා. Use env variable if possible.
-BOT_TOKEN = "8300609477:AAHM6Si6nkNSJrrsiexbVfb3FWKSpy3scgU"
+BOT_TOKEN = "5058040730:AAGerUSFE0ZbXYdYZ0866bLTDRmEBF7DTLY"
 
 
 # /start command (link එකෙන් open කරන වෙලාවට)
