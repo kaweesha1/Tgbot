@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-BOT_TOKEN = "HTTP API:
-8300609477:AAHM6Si6nkNSJrrsiexbVfb3FWKSpy3scgU"
+BOT_TOKEN = 
+"8300609477:AAHM6Si6nkNSJrrsiexbVfb3FWKSpy3scgU"
 
 # /start command (link open කරද්දි)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
