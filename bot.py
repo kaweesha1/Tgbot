@@ -18,7 +18,7 @@ def run_web():
 Thread(target=run_web).start()
 # ---------------------------------------------------------
 
-BOT_TOKEN = os.environ.get("8518142175:AAHtMpTE4I6DtCOZNS4KvjtgoOaTtEUB-t8")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -41,7 +41,7 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def main():
-    app_bot = ApplicationBuilder().token(8518142175:AAHtMpTE4I6DtCOZNS4KvjtgoOaTtEUB-t8).build()
+    app_bot = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(MessageHandler(filters.VIDEO, handle_video))
