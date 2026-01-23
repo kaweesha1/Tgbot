@@ -1,41 +1,53 @@
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-TOKEN = os.environ.get("8518142175:AAHtMpTE4I6DtCOZNS4KvjtgoOaTtEUB-t8")
+# ---- Keep alive web server (for Replit + UptimeRobot) ----
+from flask import Flask
+from threading import Thread
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is running!"
+
+def run_web():
+    app.run(host="0.0.0.0", port=8080)
+
+Thread(target=run_web).start()
+# ---------------------------------------------------------
+
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton("🔗 First Link", url="https://example.com")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
     await update.message.reply_text(
-        "Welcome! Click the first link 👇",
-        reply_markup=reply_markup
+        "👋 Send me a video.\nI will convert it to a download link."
     )
 
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
+# When user sends a video
+async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    video = update.message.video
 
-    keyboard = [
-        [InlineKeyboardButton("🔗 Second Link", url="https://google.com")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    file_id = video.file_id
 
-    await query.edit_message_text(
-        text="Now click the second link 👇",
-        reply_markup=reply_markup
+    file = await context.bot.get_file(file_id)
+
+    # Telegram direct file link
+    download_link = file.file_path
+
+    await update.message.reply_text(
+        f"✅ Your video download link:\n\n{download_link}"
     )
 
 def main():
-    app = ApplicationBuilder().token(TOKEN).build()
+    app_bot = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
+    app_bot.add_handler(CommandHandler("start", start))
+    app_bot.add_handler(MessageHandler(filters.VIDEO, handle_video))
 
-    app.run_polling()
+    print("Bot started...")
+    app_bot.run_polling()
 
 if __name__ == "__main__":
     main()
