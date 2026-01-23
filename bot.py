@@ -1,27 +1,41 @@
-from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    ContextTypes,
-    filters,
-)
+import os
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-# ⚠️ Security note:
-# Public place එකකට token දාන්න එපා. Use env variable if possible.
-BOT_TOKEN = "5058040730:AAGerUSFE0ZbXYdYZ0866bLTDRmEBF7DTLY"
+TOKEN = os.environ.get("BOT_TOKEN")
 
-
-# /start command (link එකෙන් open කරන වෙලාවට)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message is None:
-        return
+    keyboard = [
+        [InlineKeyboardButton("🔗 First Link", url="https://example.com")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-    if context.args:
-        file_id = context.args[0]
-        await update.message.reply_video(video=file_id)
-    else:
-        await update.message.reply_text("📹 Video එක upload කරන්න")
+    await update.message.reply_text(
+        "Welcome! Click the first link 👇",
+        reply_markup=reply_markup
+    )
 
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
 
-# video upload handler
+    keyboard = [
+        [InlineKeyboardButton("🔗 Second Link", url="https://google.com")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.edit_message_text(
+        text="Now click the second link 👇",
+        reply_markup=reply_markup
+    )
+
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
+
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
